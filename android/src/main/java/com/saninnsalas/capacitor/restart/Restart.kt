@@ -2,9 +2,14 @@ package com.saninnsalas.capacitor.restart
 
 import android.app.AlarmManager
 import android.app.PendingIntent
+import android.bluetooth.BluetoothClass
+import android.bluetooth.BluetoothDevice
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.util.Log
+import android.widget.Toast
 import com.getcapacitor.NativePlugin
 import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
@@ -15,6 +20,22 @@ import kotlin.system.exitProcess
 @NativePlugin
 class Restart : Plugin() {
     private val TAG = "RestartPlugin"
+
+    override fun load() {
+        val filter = IntentFilter()
+        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED)
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
+
+        Log.i(TAG, "Load 2!")
+        activity.registerReceiver(broadcastReceiver, filter)
+        super.load()
+    }
+
+    override fun handleOnDestroy() {
+        super.handleOnDestroy()
+        activity.unregisterReceiver(broadcastReceiver)
+    }
 
     @PluginMethod
     fun restart(call: PluginCall) {
@@ -56,4 +77,42 @@ class Restart : Plugin() {
         }
     }
 
+    private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(
+                context: Context,
+                intent: Intent
+        ) {
+            val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+
+            val majorDeviceClass = device?.bluetoothClass?.majorDeviceClass;
+
+            if(majorDeviceClass != BluetoothClass.Device.Major.AUDIO_VIDEO) {
+                return
+            }
+
+            val bluetoothClass = device.bluetoothClass ?: return
+            val deviceClass = bluetoothClass.deviceClass
+            val name = device.name
+
+            // BLUETOOTH AUDIO_VIDEO device
+            val action = intent.action
+            Log.i(TAG, "action: $action")
+            Log.i(TAG, "device: $device")
+            if (action == BluetoothDevice.ACTION_ACL_CONNECTED) {
+                Toast.makeText(
+                        context,
+                        "$name is now Connected",
+                        Toast.LENGTH_LONG
+                ).show()
+                Log.i(TAG, "$name Connected")
+            } else if (action == BluetoothDevice.ACTION_ACL_DISCONNECTED ) {
+                Toast.makeText(
+                        context,
+                        "$name is disconnected",
+                        Toast.LENGTH_LONG
+                ).show()
+                Log.i(TAG, "$name Disconnected")
+            }
+        }
+    }
 }
