@@ -9,9 +9,8 @@ export class RestartWeb extends WebPlugin implements RestartPlugin {
     });
   }
 
-  async restart(): Promise<void> {
-    console.log('restarting');
-    return;
+  start(): void {
+    console.log('starting');
   }
 }
 

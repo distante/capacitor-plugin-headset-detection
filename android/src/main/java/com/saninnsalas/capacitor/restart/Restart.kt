@@ -1,83 +1,80 @@
 package com.saninnsalas.capacitor.restart
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
+import android.media.AudioDeviceCallback
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
+import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.getcapacitor.NativePlugin
 import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
-import kotlin.system.exitProcess
+import com.saninnsalas.capacitor.restart.models.HeadsetDevice
+import com.saninnsalas.capacitor.restart.models.HeadsetPluginResponse
 
 
 @NativePlugin
 class Restart : Plugin() {
-    private val TAG = "RestartPlugin"
+    private val TAG = "HeadsetDetectionPlugin"
+    private val headphoneDeviceTypes = listOf(
+            AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
+            AudioDeviceInfo.TYPE_AUX_LINE,
+            AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
+            AudioDeviceInfo.TYPE_WIRED_HEADSET,
+            // AudioDeviceInfo.TYPE_USB_HEADSET Requires ApiLevel 26
+    )
 
-    override fun load() {
-        val filter = IntentFilter()
-        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
-        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED)
-        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
+    private val connectedHeadsets = mutableMapOf<Int, HeadsetDevice>()
 
-        Log.i(TAG, "Load 2!")
-        activity.registerReceiver(broadcastReceiver, filter)
-        super.load()
+    @PluginMethod
+    fun start(_call: PluginCall) {
+        val audioManager = context.getSystemService(AudioManager::class.java)
+        audioManager.registerAudioDeviceCallback(deviceCallBack, null)
+    }
+
+    private fun updateHeadphonesConnected() {
+        val isConnected = connectedHeadsets.isNotEmpty()
+        val response = HeadsetPluginResponse(isConnected, connectedHeadsets.values.toList())
+        val jsObject = response.toJSObject();
+        Log.i(TAG, "response $jsObject")
+        notifyListeners("ConnectedHeadphones", jsObject)
+    }
+
+    private val deviceCallBack: AudioDeviceCallback =  object: AudioDeviceCallback() {
+        override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo>?) {
+            if(addedDevices == null) return
+            val headphones = addedDevices.filter { isHeadphoneDevice(it) }
+            headphones.forEach {
+                Log.d(TAG, "Headphones addedDevices ${it.productName}, type: ${it.type}")
+                connectedHeadsets[it.id] = HeadsetDevice(it.id, it.type, it.productName.toString())
+            }
+            updateHeadphonesConnected()
+        }
+
+        override fun onAudioDevicesRemoved(removedDevices: Array<out AudioDeviceInfo>?) {
+            if(removedDevices == null) return
+            val headphones = removedDevices.filter { isHeadphoneDevice(it) }
+            headphones.forEach {
+                Log.d(TAG, "Headphones removedDevices ${it.productName}, type: ${it.type}")
+                connectedHeadsets.remove(it.id)
+            }
+            updateHeadphonesConnected()
+        }
     }
 
     override fun handleOnDestroy() {
         super.handleOnDestroy()
-        activity.unregisterReceiver(broadcastReceiver)
+        activity.unregisterReceiver(bluetoothBroadcastReceiver)
+        activity.unregisterReceiver(headsetBroadcastReceiver)
     }
 
-    @PluginMethod
-    fun restart(call: PluginCall) {
-        doRestartOne(context)
-    }
-
-
-    private fun doRestartOne(context: Context) {
-        try {
-            //fetch the packagemanager so we can get the default launch activity
-            // (you can replace this intent with any other activity if you want
-            val startActivityIntent = context.packageManager.getLaunchIntentForPackage(
-                    context.packageName
-            )
-
-            if (startActivityIntent == null) {
-                Log.e(TAG, "We could not build the start activity intent")
-                return
-            }
-
-            startActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            //create a pending intent so the application is restarted after System.exit(0) was called.
-            // We use an AlarmManager to call this intent in 100ms
-            val mPendingIntentId = 223344
-            val mPendingIntent = PendingIntent
-                    .getActivity(context, mPendingIntentId, startActivityIntent,
-                            PendingIntent.FLAG_CANCEL_CURRENT)
-
-//            val alarmService = context.getSystemService(Context.ALARM_SERVICE)[AlarmManager.RTC, System.currentTimeMillis() + 100] = mPendingIntent
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent)
-            Log.e(TAG, "Restarting in 100 ms")
-            //kill the application
-            exitProcess(0)
-
-
-        } catch (ex: Exception) {
-            Log.e(TAG, "Was not able to restart application")
-        }
-    }
-
-    private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+    private val bluetoothBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(
                 context: Context,
                 intent: Intent
@@ -90,29 +87,68 @@ class Restart : Plugin() {
                 return
             }
 
-            val bluetoothClass = device.bluetoothClass ?: return
-            val deviceClass = bluetoothClass.deviceClass
             val name = device.name
 
             // BLUETOOTH AUDIO_VIDEO device
             val action = intent.action
-            Log.i(TAG, "action: $action")
-            Log.i(TAG, "device: $device")
+
             if (action == BluetoothDevice.ACTION_ACL_CONNECTED) {
                 Toast.makeText(
                         context,
-                        "$name is now Connected",
+                        "$name BLUETOOTH is now Connected",
                         Toast.LENGTH_LONG
                 ).show()
                 Log.i(TAG, "$name Connected")
             } else if (action == BluetoothDevice.ACTION_ACL_DISCONNECTED ) {
                 Toast.makeText(
                         context,
-                        "$name is disconnected",
+                        "$name BLUETOOTH is disconnected",
                         Toast.LENGTH_LONG
                 ).show()
-                Log.i(TAG, "$name Disconnected")
+                Log.i(TAG, "$name BLUETOOTH Disconnected")
             }
         }
+    }
+
+    private val headsetBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(
+                context: Context,
+                intent: Intent
+        ) {
+            val extras: Bundle? = intent.extras
+
+            val headsetState = intent.getIntExtra("state", -1)
+            val headsetName = intent.getStringExtra("name")
+
+            when(headsetState) {
+                1 -> {
+                    Toast.makeText(
+                            context,
+                            "$headsetName Headset is now Connected",
+                            Toast.LENGTH_LONG
+                    ).show()
+                    Log.i(TAG, "$headsetName Headset Connected")
+                }
+                0 -> {
+                    Toast.makeText(
+                            context,
+                            "$headsetName Headset is now Disconnected",
+                            Toast.LENGTH_LONG
+                    ).show()
+                    Log.i(TAG, "$headsetName Headset Disconnected")
+                }
+                else -> {
+                    Log.i(TAG, "No idea what is happening with $headsetName")
+                }
+            }
+
+        }
+    }
+
+    private fun isHeadphoneDevice(device: AudioDeviceInfo ): Boolean {
+        // Filter idea from https://github.com/google/talkback/blob/92eb6dd4461e53fc904052b7fbe9b77ddfbf930a/utils/src/main/java/HeadphoneStateMonitor.java#L125
+        val isSink = device.isSink;
+        val type = device.type
+        return isSink && headphoneDeviceTypes.contains(type)
     }
 }
