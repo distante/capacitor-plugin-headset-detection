@@ -1,4 +1,4 @@
-package com.saninnsalas.capacitor.restart.models
+package com.saninnsalas.capacitor.headsetdetection.models
 
 import com.getcapacitor.JSObject
 
@@ -10,7 +10,7 @@ data class HeadsetDevice(val id: Int, val typeCode: Int, val name: String) {
         jsonObject.put("id", id)
         jsonObject.put("typeCode", typeCode)
         jsonObject.put("type", type)
-        jsonObject.put("name", type)
+        jsonObject.put("name", name)
 
         return jsonObject
     }

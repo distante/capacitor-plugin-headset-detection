@@ -1,4 +1,4 @@
-package com.saninnsalas.capacitor.restart.models
+package com.saninnsalas.capacitor.headsetdetection.models
 
 import android.media.AudioDeviceInfo
 

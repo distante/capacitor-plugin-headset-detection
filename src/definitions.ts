@@ -2,22 +2,29 @@ import { PluginListenerHandle } from '@capacitor/core';
 
 declare module '@capacitor/core' {
   interface PluginRegistry {
-    Restart: RestartPlugin;
+    HeadsetDetection: HeadsetDetectionPlugin;
   }
+}
+
+export enum HeadsetTypes {
+  BLUETOOTH_A2DP = 'TYPE_BLUETOOTH_A2DP',
+  AUX_LINE = 'TYPE_AUX_LINE',
+  WIRED_HEADPHONES = 'TYPE_WIRED_HEADPHONES',
+  WIRED_HEADSET = 'TYPE_WIRED_HEADSET',
 }
 
 export interface HeadsetDevice {
   id: number;
-  type: string;
+  type: HeadsetTypes;
   typeCode: number;
   name: string;
 }
 export interface HeadsetDetectionEvent {
   isConnected: boolean;
-  devices: HeadsetDevice[];
+  device: HeadsetDevice | null;
 }
 
-export interface RestartPlugin {
+export interface HeadsetDetectionPlugin {
   /**
    * Will start listening to Headphone device changes.
    *

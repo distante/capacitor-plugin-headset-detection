@@ -1,0 +1,33 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Testing
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Blank</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div id="container">
+    
+    <p>isConnected: {{ isConnected$ | async}}</p>
+      <ion-card *ngIf="headsets$ |async as headset">
+        <ion-list>
+          <ion-list-header>
+            Connected Headset: 
+            <ion-icon name="headset-outline"></ion-icon>
+              <ion-icon name="bluetooth-outline" *ngIf="headset.type === HeadsetTypes.BLUETOOTH_A2DP"></ion-icon>
+          </ion-list-header>
+          <ion-item *ngFor="let key of getObjectKeys(headset)">
+             <strong>{{key}}: &nbsp;&nbsp;{{headset[key]}}</strong>
+          </ion-item>
+      </ion-list>
+      </ion-card>
+    
+  </div>
+</ion-content>

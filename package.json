@@ -1,7 +1,7 @@
 {
-  "name": "@saninn/capacitor-plugin-restart",
+  "name": "@saninn/capacitor-plugin-headset-detection",
   "version": "0.0.1",
-  "description": "This plugin will restart your app completely",
+  "description": "Detect if one (or more) headsets are connected to your device",
   "main": "dist/plugin.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -40,7 +40,7 @@
     "dist/",
     "ios/",
     "android/",
-    "SaninnCapacitorPluginRestart.podspec"
+    "SaninnCapacitorPluginHeadsetDetection.podspec"
   ],
   "keywords": [
     "capacitor",

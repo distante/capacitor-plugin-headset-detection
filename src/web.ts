@@ -1,10 +1,10 @@
 import { WebPlugin } from '@capacitor/core';
-import { RestartPlugin } from './definitions';
+import { HeadsetDetectionPlugin } from './definitions';
 
-export class RestartWeb extends WebPlugin implements RestartPlugin {
+export class HeadsetDetectionWeb extends WebPlugin implements HeadsetDetectionPlugin {
   constructor() {
     super({
-      name: 'Restart',
+      name: 'HeadsetDetection',
       platforms: ['web'],
     });
   }
@@ -14,9 +14,9 @@ export class RestartWeb extends WebPlugin implements RestartPlugin {
   }
 }
 
-const Restart = new RestartWeb();
+const HeadsetDetection = new HeadsetDetectionWeb();
 
-export { Restart };
+export { HeadsetDetection };
 
 import { registerWebPlugin } from '@capacitor/core';
-registerWebPlugin(Restart);
+registerWebPlugin(HeadsetDetection);
