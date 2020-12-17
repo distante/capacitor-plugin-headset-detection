@@ -1,6 +1,6 @@
 {
   "name": "@saninn/capacitor-plugin-headset-detection",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Detect if one (or more) headsets are connected to your device",
   "main": "dist/plugin.js",
   "module": "dist/esm/index.js",

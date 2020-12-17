@@ -1,4 +1,5 @@
-import { WebPlugin } from '@capacitor/core';
+import { registerWebPlugin, WebPlugin } from '@capacitor/core';
+
 import { HeadsetDetectionPlugin } from './definitions';
 
 export class HeadsetDetectionWeb extends WebPlugin implements HeadsetDetectionPlugin {
@@ -7,6 +8,20 @@ export class HeadsetDetectionWeb extends WebPlugin implements HeadsetDetectionPl
       name: 'HeadsetDetection',
       platforms: ['web'],
     });
+
+    
+    // @ts-ignore
+    if (!window['SSD']) {
+      // @ts-ignore
+      window['SSD'] = {}
+    }
+    // @ts-ignore
+    if (!window['SSD'].plugins) {
+    // @ts-ignore
+      window['SSD'].plugins = {}
+    }
+      // @ts-ignore
+    window['SSD'].plugins.headsetDetection = this;
   }
 
   start(): void {
@@ -18,5 +33,4 @@ const HeadsetDetection = new HeadsetDetectionWeb();
 
 export { HeadsetDetection };
 
-import { registerWebPlugin } from '@capacitor/core';
 registerWebPlugin(HeadsetDetection);
