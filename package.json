@@ -1,6 +1,6 @@
 {
   "name": "@saninn/capacitor-plugin-headset-detection",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Detect if one (or more) headsets are connected to your device",
   "main": "dist/plugin.js",
   "module": "dist/esm/index.js",
@@ -12,7 +12,8 @@
     "build": "npm run clean && tsc && rollup -c rollup.config.js",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "prepare": "npm run build"
   },
   "author": "Saninn Salas Diaz (www.saninnsalas.com)",
   "license": "MIT",
