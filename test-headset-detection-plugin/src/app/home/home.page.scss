@@ -25,3 +25,15 @@
 #container a {
   text-decoration: none;
 }
+
+.connected-header {
+  padding: 0 16px;
+}
+
+.connected-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  font-size: 2em;
+  width: 100%;
+}

@@ -1,6 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { Plugins } from '@capacitor/core';
-import { HeadsetDevice, HeadsetDetectionPlugin, HeadsetTypes } from '@saninn/capacitor-plugin-headset-detection';
+import { HeadsetDevice, HeadsetDetectionPlugin, HeadsetTypes, HeadphoneDetectionEventNames } from '@saninn/capacitor-plugin-headset-detection';
 import '@saninn/capacitor-plugin-headset-detection';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { debounceTime, tap } from 'rxjs/operators';
@@ -30,7 +30,7 @@ export class HomePage {
     );
 
   constructor(private readonly ngZone: NgZone) {
-    headSetDetectionPlugin.addListener('ConnectedHeadphones', info => {
+    headSetDetectionPlugin.addListener(HeadphoneDetectionEventNames.ConnectedHeadphones, info => {
       this.ngZone.run(() => {
         this.headsets$$.next(info.device);
         this.isConnected$$.next(info.isConnected);
@@ -44,6 +44,10 @@ export class HomePage {
 
   public getObjectKeys(object: Record<string, any>): string[] {
     return Object.keys(object);
+  }
+
+  public alert(text: string): void {
+    alert(text)
   }
 
 }

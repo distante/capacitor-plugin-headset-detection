@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Testing
+      Headset Detection
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -18,10 +18,11 @@
     <p>isConnected: {{ isConnected$ | async}}</p>
       <ion-card *ngIf="headsets$ |async as headset">
         <ion-list>
-          <ion-list-header>
-            Connected Headset: 
+          <ion-list-header class="connected-header">
+            <div class="connected-header-content">
             <ion-icon name="headset-outline"></ion-icon>
               <ion-icon name="bluetooth-outline" *ngIf="headset.type === HeadsetTypes.BLUETOOTH_A2DP"></ion-icon>
+            </div>
           </ion-list-header>
           <ion-item *ngFor="let key of getObjectKeys(headset)">
              <strong>{{key}}: &nbsp;&nbsp;{{headset[key]}}</strong>

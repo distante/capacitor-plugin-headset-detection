@@ -6,6 +6,10 @@ declare module '@capacitor/core' {
   }
 }
 
+export enum HeadphoneDetectionEventNames {
+  ConnectedHeadphones = 'ConnectedHeadphones'
+}
+
 export enum HeadsetTypes {
   BLUETOOTH_A2DP = 'TYPE_BLUETOOTH_A2DP',
   AUX_LINE = 'TYPE_AUX_LINE',
@@ -40,7 +44,7 @@ export interface HeadsetDetectionPlugin {
    * IMPORTANT: Register your listeners *before* you call {@link start}
    */
   addListener(
-    eventName: 'ConnectedHeadphones',
+    eventName: HeadphoneDetectionEventNames.ConnectedHeadphones,
     listenerFunc: (info: HeadsetDetectionEvent) => void,
   ): PluginListenerHandle;
 }
