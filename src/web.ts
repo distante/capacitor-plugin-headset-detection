@@ -1,7 +1,8 @@
 import { registerWebPlugin, WebPlugin } from '@capacitor/core';
 
 import { registerCapacitorPlugin } from './debugger-register';
-import { HeadphoneDetectionEventNames, HeadsetDetectionEvent, HeadsetDetectionPlugin, HeadsetTypes } from './definitions';
+import { HeadsetDetectionEvent, HeadsetDetectionPlugin } from './definitions';
+import { HeadphoneDetectionEventNames, HeadsetTypes } from './models';
 
 const DEVICE_TEST_OBJECTS: {[key: string]: HeadsetDetectionEvent} = {
   bluetooth: {
