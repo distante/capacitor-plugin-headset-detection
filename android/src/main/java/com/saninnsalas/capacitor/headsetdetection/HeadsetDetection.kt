@@ -14,6 +14,9 @@ import com.saninnsalas.capacitor.headsetdetection.models.HeadsetPluginResponse
 @NativePlugin
 class HeadsetDetection : Plugin() {
     private val TAG = "HeadsetDetectionPlugin"
+
+    private var started = false
+
     private val headphoneDeviceTypes = listOf(
             AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
             AudioDeviceInfo.TYPE_AUX_LINE,
@@ -26,8 +29,16 @@ class HeadsetDetection : Plugin() {
 
     @PluginMethod
     fun start(_call: PluginCall) {
-        val audioManager = context.getSystemService(AudioManager::class.java)
-        audioManager.registerAudioDeviceCallback(deviceCallBack, null)
+        if(!started) {
+            Log.i(TAG, "Starting plugin.")
+            val audioManager = context.getSystemService(AudioManager::class.java)
+            audioManager.registerAudioDeviceCallback(deviceCallBack, null)
+            started = true
+        } else {
+            Log.i(TAG, "start() was called when the plugin was already started. Updating headphones.")
+            updateHeadphonesConnected()
+        }
+
     }
 
     private fun updateHeadphonesConnected() {
