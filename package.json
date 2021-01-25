@@ -60,10 +60,10 @@
   "swiftlint": "@ionic/swiftlint-config",
   "repository": {
     "type": "git",
-    "url": "https://github.com/distante/capacitor-plugin-restart"
+    "url": "https://github.com/distante/capacitor-plugin-headset-detection"
   },
   "bugs": {
-    "url": "https://github.com/distante/capacitor-plugin-restart/issues"
+    "url": "https://github.com/distante/capacitor-plugin-headset-detection/issues"
   },
   "husky": {
     "hooks": {
