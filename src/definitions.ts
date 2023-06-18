@@ -1,10 +1,5 @@
 import { PluginListenerHandle } from '@capacitor/core';
 import { HeadsetTypes, HeadphoneDetectionEventNames } from './models';
-declare module '@capacitor/core' {
-  interface PluginRegistry {
-    HeadsetDetection: HeadsetDetectionPlugin;
-  }
-}
 
 export interface HeadsetDevice {
   id: number;
@@ -34,6 +29,6 @@ export interface HeadsetDetectionPlugin {
    */
   addListener(
     eventName: HeadphoneDetectionEventNames.ConnectedHeadphones,
-    listenerFunc: (info: HeadsetDetectionEvent) => void,
+    listenerFunc: (info: HeadsetDetectionEvent) => void
   ): PluginListenerHandle;
 }

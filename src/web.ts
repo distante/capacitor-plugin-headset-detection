@@ -1,4 +1,4 @@
-import { registerPlugin, WebPlugin } from '@capacitor/core';
+import { WebPlugin } from '@capacitor/core';
 
 import { registerCapacitorPlugin } from './debugger-register';
 import { HeadsetDetectionEvent, HeadsetDetectionPlugin } from './definitions';
