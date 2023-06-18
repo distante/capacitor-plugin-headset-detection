@@ -1,4 +1,4 @@
-import { registerWebPlugin, WebPlugin } from '@capacitor/core';
+import { registerPlugin, WebPlugin } from '@capacitor/core';
 
 import { registerCapacitorPlugin } from './debugger-register';
 import { HeadsetDetectionEvent, HeadsetDetectionPlugin } from './definitions';
@@ -46,9 +46,7 @@ const DEVICE_TEST_OBJECTS: { [key: string]: HeadsetDetectionEvent } = {
     device: null,
   },
 };
-export class HeadsetDetectionWeb
-  extends WebPlugin
-  implements HeadsetDetectionPlugin {
+export class HeadsetDetectionWeb extends WebPlugin implements HeadsetDetectionPlugin {
   constructor() {
     super({
       name: 'HeadsetDetection',
@@ -60,33 +58,24 @@ export class HeadsetDetectionWeb
 
   start(): void {
     console.log('HeadsetDetectionPlugin starting mocked web implementation');
-    if (
-      this.listeners[HeadphoneDetectionEventNames.ConnectedHeadphones].length
-    ) {
-      this.listeners[HeadphoneDetectionEventNames.ConnectedHeadphones].forEach(
-        listener => {
-          listener(DEVICE_TEST_OBJECTS.none);
-        },
-      );
+    if (this.listeners[HeadphoneDetectionEventNames.ConnectedHeadphones].length) {
+      this.listeners[HeadphoneDetectionEventNames.ConnectedHeadphones].forEach((listener) => {
+        listener(DEVICE_TEST_OBJECTS.none);
+      });
     }
   }
 
   private registerDebugFunctions(): void {
     const functions: Array<{ name: string; theFunction: Function }> = [];
 
-    Object.keys(DEVICE_TEST_OBJECTS).forEach(deviceTestObjectName => {
+    Object.keys(DEVICE_TEST_OBJECTS).forEach((deviceTestObjectName) => {
       functions.push({
         name: `emit_update_with_device_type_${deviceTestObjectName}`,
         theFunction: () => {
-          if (
-            !this.listeners[HeadphoneDetectionEventNames.ConnectedHeadphones]
-              .length
-          ) {
+          if (!this.listeners[HeadphoneDetectionEventNames.ConnectedHeadphones].length) {
             return;
           }
-          this.listeners[
-            HeadphoneDetectionEventNames.ConnectedHeadphones
-          ].forEach(listener => {
+          this.listeners[HeadphoneDetectionEventNames.ConnectedHeadphones].forEach((listener) => {
             listener(DEVICE_TEST_OBJECTS[deviceTestObjectName]);
           });
         },
@@ -102,9 +91,3 @@ export class HeadsetDetectionWeb
     registerCapacitorPlugin('HeadsetDetection', objectToRegister);
   }
 }
-
-const HeadsetDetection = new HeadsetDetectionWeb();
-
-export { HeadsetDetection };
-
-registerWebPlugin(HeadsetDetection);
