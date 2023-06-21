@@ -1,6 +1,7 @@
 import { PluginListenerHandle } from '@capacitor/core';
 import { HeadsetTypes, HeadphoneDetectionEventNames } from './models';
 
+export { HeadsetTypes, HeadphoneDetectionEventNames } from './models';
 export interface HeadsetDevice {
   id: number;
   type: HeadsetTypes;

@@ -4,7 +4,6 @@ import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.util.Log
-import com.getcapacitor.NativePlugin
 import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
@@ -12,8 +11,8 @@ import com.getcapacitor.annotation.CapacitorPlugin
 import com.saninnsalas.capacitor.headsetdetection.models.HeadsetDevice
 import com.saninnsalas.capacitor.headsetdetection.models.HeadsetPluginResponse
 
-@CapacitorPlugin
-class HeadsetDetection : Plugin() {
+@CapacitorPlugin(name = "HeadsetDetectionPlugin")
+public class HeadsetDetectionPlugin : Plugin() {
     private val TAG = "HeadsetDetectionPlugin"
 
     private var started = false
